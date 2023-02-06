@@ -1,0 +1,27 @@
+[package]
+name = "cut-1d-service"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = {version="0.6.2",features=["multipart"]}
+tokio = {version = "1.21.2",features = ["full"] }
+rayon = "1.5"
+tower = "0.4.13"
+tower-http = { version = "0.3.4",features=["cors"] }
+serde = {version="1.0.147",features=["derive"]}
+serde_json = "1.0.87"
+serde_yaml = "0.9.14"
+http = "0.2"
+random-number = "0.1.8"
+#getset
+getset = "0.1.2"
+#log
+log = "0.4"
+fast_log = { version="1.5.1", features = ["lz4","zip", "gzip"]}
+#对象存储
+state = { version = "0.5.3", features = ["tls"] }
+#配置剪切方案
+cut-optimizer-1d = { path = "./cut-optimizer-1d" }
