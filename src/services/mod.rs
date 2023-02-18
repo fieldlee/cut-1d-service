@@ -63,8 +63,10 @@ impl CutSolverService {
                     let mut e_cut_piece = SubResultSolver::default();
                     let mut remain_length = ele.length;
                     let mut all_sub_len = vec![];
+                    let mut all_sub_weight = vec![];
                     for e in ele.cut_pieces {
                         all_sub_len.push(e.length);
+                        all_sub_weight.push(e.weight);
                         result_info.sub_weights[e.external_id.unwrap()] += e.weight;
                         remain_length -= e.length;
                     }
@@ -72,6 +74,7 @@ impl CutSolverService {
                     let un_used_weight =  ((remain_length as f32 / ele.length as f32) * ele.weight as f32) as usize;
                     e_cut_piece.set_un_used_weight(un_used_weight);
                     e_cut_piece.set_subs(all_sub_len);
+                    e_cut_piece.set_sub_weights(all_sub_weight);
                     result_cut_pieces.push(e_cut_piece);
                 }
                 // 赋值 返回
@@ -174,11 +177,18 @@ impl CutSolverService {
                 com_childs_width_all += len_solver.child_rolls[index].width * quantity;
             }
             // 在有效的长度内计入有效的列表
-            
             if  parent_all_valid_len_min  < com_childs_width_all &&  com_childs_width_all <= parent_all_valid_len {
-                println!("parent_all_valid_len_min:{},parent_all_valid_len:{}",parent_all_valid_len_min,parent_all_valid_len);
                 if !con_childs_quantity.contains(childs_quantity_zero.borrow_mut().to_vec().as_ref()){
-                    con_childs_quantity.push(childs_quantity_zero.borrow_mut().to_vec());
+                    let mut has_zero = false;  // 如果有值为0 的情况，不记入列表
+                    for (i,item) in childs_quantity_zero.borrow_mut().iter().enumerate() {
+                        if *item == 0 {
+                            has_zero = true;
+                        }
+                    }
+                    if has_zero == false {
+                        con_childs_quantity.push(childs_quantity_zero.borrow_mut().to_vec());
+                    }
+                   
                 }
             }
         }
@@ -223,7 +233,14 @@ impl CutSolverService {
                 }
             }
         }
+
+        // 排序
+        valid_result_list.sort_by(|a, b| {
+           return a.get_unused().cmp(&b.get_unused());
+        });
+
         result_child_solvers.set_solutions(valid_result_list);
+
         return Ok(result_child_solvers);
     }
 }

@@ -69,6 +69,7 @@ pub struct SubResultSolver {
     un_used: usize,
     un_used_weight: usize,
     subs: Vec<usize>,
+    sub_weights:Vec<usize>,
 }
 
 
@@ -84,6 +85,18 @@ pub struct RuleSolutions {
     sub_child_solver: Vec<SubChildSolver>,
     solutions:ResultSolver,
 }
+
+impl RuleSolutions {
+    pub fn get_unused(&self) -> usize {
+        let a_sols = self.solutions().solutions().as_slice().to_owned();
+        let mut a_unused = 0;
+        for solver in a_sols{
+            a_unused += solver.un_used();
+        }
+        return a_unused ;
+    }
+}
+
 
 type OptimizeError = (StatusCode, Json<Value>);
 

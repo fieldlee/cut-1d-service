@@ -44,8 +44,10 @@ pub fn solve_cut_optimize_for_service( slover: CutSolver) -> Result<ResultSolver
                 let mut e_cut_piece = SubResultSolver::default();
                 let mut remain_length = ele.length;
                 let mut all_sub_len = vec![];
+                let mut all_sub_weight = vec![];
                 for e in ele.cut_pieces {
                     all_sub_len.push(e.length);
+                    all_sub_weight.push(e.weight);
                     result_info.sub_weights[e.external_id.unwrap()] += e.weight;
                     remain_length -= e.length;
                 }
@@ -53,6 +55,7 @@ pub fn solve_cut_optimize_for_service( slover: CutSolver) -> Result<ResultSolver
                 let un_used_weight =  ((remain_length as f32 / ele.length as f32) * ele.weight as f32) as usize;
                 e_cut_piece.set_un_used_weight(un_used_weight);
                 e_cut_piece.set_subs(all_sub_len);
+                e_cut_piece.set_sub_weights(all_sub_weight);
                 result_cut_pieces.push(e_cut_piece);
             }
             // 赋值 返回
